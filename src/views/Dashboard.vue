@@ -12,23 +12,22 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { getAuth, signOut } from 'firebase/auth';
+import { useRouter } from 'vue-router';
 
-export default {
-  methods: {
-    async logout() {
-      try {
-        const auth = getAuth();
-        await signOut(auth);
-        this.$router.push('/login'); // Redirect to login after successful logout
-      } catch (error) {
-        console.error('Error signing out:', error);
-        alert('Failed to logout. Please try again.');
-      }
-    }
+const router = useRouter();
+
+async function logout() {
+  try {
+    const auth = getAuth();
+    await signOut(auth);
+    router.push('/login'); // Redirect to login after successful logout
+  } catch (error) {
+    console.error('Error signing out:', error);
+    alert('Failed to logout. Please try again.');
   }
-};
+}
 </script>
 
 <style scoped>

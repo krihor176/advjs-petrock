@@ -2,58 +2,57 @@
   <div class="container login-container">
     <h1>Login</h1>
     <form @submit.prevent="login">
-      <input type="email" v-model="email" placeholder="Email" required>
-      <input type="password" v-model="password" placeholder="Password" required>
+      <input type="email" v-model="email" placeholder="Email" required />
+      <input type="password" v-model="password" placeholder="Password" required />
       <button type="submit" class="submit">Login</button>
     </form>
-    <p><router-link to="/signup" class="notauser">Don't have an account? Sign Up</router-link></p>
+    <p>
+      <router-link to="/signup" class="notauser">Don't have an account? Sign Up</router-link>
+    </p>
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
-export default {
-  data() {
-    return {
-      email: '',
-      password: '',
-      errorMessage: ''
-    };
-  },
-  methods: {
-    async login() {
-      try {
-        const auth = getAuth();
-        await signInWithEmailAndPassword(auth, this.email, this.password);
-        this.$router.push('/dashboard');
-        // Add additional logic for successful login, e.g., redirect to dashboard
-      } catch (error) {
-        this.handleAuthError(error);
-      }
-    },
-    handleAuthError(error) {
-      switch (error.code) {
-        case 'auth/invalid-email':
-          this.errorMessage = 'The email address is not valid.';
-          break;
-        case 'auth/user-disabled':
-          this.errorMessage = 'The user account has been disabled.';
-          break;
-        case 'auth/user-not-found':
-          this.errorMessage = 'There is no user corresponding to the given email.';
-          break;
-        case 'auth/wrong-password':
-          this.errorMessage = 'The password is invalid for the given email.';
-          break;
-        case 'auth/invalid-credential':
-          this.errorMessage = 'Incorrect password. Please try again.';
-          break;
-        default:
-          this.errorMessage = 'An unknown error occurred. Please try again.';
-      }
-    }
+const email = ref<string>('');
+const password = ref<string>('');
+const errorMessage = ref<string>('');
+
+const router = useRouter();
+
+const login = async () => {
+  try {
+    const auth = getAuth();
+    await signInWithEmailAndPassword(auth, email.value, password.value);
+    router.push('/dashboard');
+  } catch (error) {
+    handleAuthError(error);
+  }
+};
+
+const handleAuthError = (error: { code: string }) => {
+  switch (error.code) {
+    case 'auth/invalid-email':
+      errorMessage.value = 'The email address is not valid.';
+      break;
+    case 'auth/user-disabled':
+      errorMessage.value = 'The user account has been disabled.';
+      break;
+    case 'auth/user-not-found':
+      errorMessage.value = 'There is no user corresponding to the given email.';
+      break;
+    case 'auth/wrong-password':
+      errorMessage.value = 'The password is invalid for the given email.';
+      break;
+    case 'auth/invalid-credential':
+      errorMessage.value = 'Incorrect password. Please try again.';
+      break;
+    default:
+      errorMessage.value = 'An unknown error occurred. Please try again.';
   }
 };
 </script>
