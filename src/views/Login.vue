@@ -29,7 +29,7 @@ const login = async () => {
     const auth = getAuth();
     await signInWithEmailAndPassword(auth, email.value, password.value);
     router.push('/dashboard');
-  } catch (error) {
+  } catch (error :any) {
     handleAuthError(error);
   }
 };

@@ -11,61 +11,59 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
 
-export default {
-  data() {
-    return {
-      email: '',
-      password: '',
-      errorMessage: ''
-    };
-  },
-  methods: {
-    async signup() {
-      try {
-        const auth = getAuth();
-        const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password);
-        
-        // Assign role to user in Firestore
-        await this.assignUserRole(userCredential.user.uid);
+const email = ref<string>('');
+const password = ref<string>('');
+const errorMessage = ref<string>('');
 
-        // Redirect to dashboard after successful signup
-        this.$router.push('/dashboard');
-      } catch (error) {
-        this.handleAuthError(error);
-      }
-    },
-    async assignUserRole(uid) {
-      const db = getFirestore();
-      await setDoc(doc(collection(db, 'users'), uid), {
-        uid: uid,
-        role: 'user' // Setting default role to "user"
-      });
-    },
-    handleAuthError(error) {
-      switch (error.code) {
-        case 'auth/email-already-in-use':
-          this.errorMessage = 'The email address is already in use by another account.';
-          break;
-        case 'auth/invalid-email':
-          this.errorMessage = 'The email address is not valid.';
-          break;
-        case 'auth/operation-not-allowed':
-          this.errorMessage = 'Email/password accounts are not enabled.';
-          break;
-        case 'auth/weak-password':
-          this.errorMessage = 'The password is too weak.';
-          break;
-        default:
-          this.errorMessage = 'An unknown error occurred. Please try again.';
-      }
-    }
+const router = useRouter();
+
+const signup = async () => {
+  try {
+    const auth = getAuth();
+    const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
+    
+    await assignUserRole(userCredential.user.uid);
+
+    router.push('/dashboard');
+  } catch (error: any) {
+    handleAuthError(error);
+  }
+};
+
+const assignUserRole = async (uid: string) => {
+  const db = getFirestore();
+  await setDoc(doc(collection(db, 'users'), uid), {
+    uid: uid,
+    role: 'user' 
+  });
+};
+
+const handleAuthError = (error: { code: string }) => {
+  switch (error.code) {
+    case 'auth/email-already-in-use':
+      errorMessage.value = 'The email address is already in use by another account.';
+      break;
+    case 'auth/invalid-email':
+      errorMessage.value = 'The email address is not valid.';
+      break;
+    case 'auth/operation-not-allowed':
+      errorMessage.value = 'Email/password accounts are not enabled.';
+      break;
+    case 'auth/weak-password':
+      errorMessage.value = 'The password is too weak.';
+      break;
+    default:
+      errorMessage.value = 'An unknown error occurred. Please try again.';
   }
 };
 </script>
+
 
 <style scoped>
 .signup-container {

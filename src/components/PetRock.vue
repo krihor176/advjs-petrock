@@ -3,7 +3,7 @@
     <h1>{{ pet.name }} is feeling {{ pet.mood }}</h1>
 
     <div class="music-section">
-      <button style="position: absolute; top: 10px; left: 10px; text-decoration: none;" @click="toggleMusic">{{ isMusicPlaying ? 'Stop Music' : 'Play Music' }}</button>
+      <button style="position: absolute; top: 20px; left: 10px; text-decoration: none;" @click="toggleMusic">{{ isMusicPlaying ? 'Stop Music' : 'Play Music' }}</button>
     </div>
 
 
@@ -11,7 +11,7 @@
       <img :src="petImage" :alt="`${pet.name} is ${pet.mood}`" class="pet-rock-image" />
       <img v-if="pet.hat && pet.hat !== ''" :src="pet.hat" alt="Pet's hat" class="pet-rock-hat" />
     </div>
-    <button style="position: absolute; top: 10px; right: 10px; text-decoration: none;"><router-link to="/dashboard">Go to account dashboard</router-link></button>
+    <button style="position: absolute; top: 20px; right: 10px; text-decoration: none;"><router-link to="/dashboard">Go to account dashboard</router-link></button>
     
     <div class="name-section">
       <input v-model="newRockName" placeholder="Enter pet rock name" />
@@ -61,7 +61,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
-import { rockNameCollectionRef, rockHatCollectionRef } from '../firebase/firebase';
+import { rockNameCollectionRef, rockHatCollectionRef } from '../firebase/firebase.ts';
 import happyRockImage from '@/assets/happy-rock.png';
 import sadRockImage from '@/assets/sad-rock.png';
 import festiveRockImage from '@/assets/festive-rock.png';
@@ -213,7 +213,7 @@ body {
   background-image: url('@/assets/rock-background.jpg');
   background-size: cover;
   background-position: center;
-  padding: 20px;
+  padding: 50px;
   border-radius: 8px;
 }
 
